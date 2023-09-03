@@ -161,7 +161,11 @@ function addRandomShipsToGameboard(gameboard) {
                 }
             }
         } while (!shipFits);
-        gameboard.placeShip(new ship_1.default(shipLength), x, y, horizontal);
+        const ship = new ship_1.default(shipLength);
+        console.log(x, y);
+        if (gameboard.validPlacement(ship, x, y, !horizontal)) {
+            gameboard.placeShip(ship, x, y, !horizontal);
+        }
     });
 }
 // Create the game boards

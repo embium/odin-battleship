@@ -16,6 +16,19 @@ class Gameboard {
   }
 
   placeShip(ship: Ship, x: number, y: number, vertical: boolean) {
+    for (let i = 0; i < ship.getLength(); i++) {
+      if (vertical) {
+        if (this.grid[x + i][y] !== null) {
+          return false;
+        }
+        this.grid[x + i][y] = ship;
+      } else {
+        if (this.grid[x][y + i] !== null) {
+          return false;
+        }
+        this.grid[x][y + i] = ship;
+      }
+    }
     this.ships.push(ship);
   }
 
@@ -29,20 +42,6 @@ class Gameboard {
       (!vertical && y + ship.getLength() > this.grid[0].length)
     ) {
       return false;
-    }
-
-    for (let i = 0; i < ship.getLength(); i++) {
-      if (vertical) {
-        if (this.grid[x + i][y] !== null) {
-          return false;
-        }
-        this.grid[x + i][y] = ship;
-      } else {
-        if (this.grid[x][y + i] !== null) {
-          return false;
-        }
-        this.grid[x][y + i] = ship;
-      }
     }
     return true;
   }
