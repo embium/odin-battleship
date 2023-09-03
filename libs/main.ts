@@ -13,9 +13,82 @@ const playerBoard = document.getElementById('player-board')!;
 const computerBoard = document.getElementById('computer-board')!;
 const messageElement = document.getElementById('message')!;
 
+const clickedCells = new Set();
+
 // Create the player and computer boards
 createBoard(playerBoard, false);
 createBoard(computerBoard, true);
+
+const ships = document.querySelectorAll('.ship');
+
+ships.forEach((ship) => {
+  const draggableShip = ship as HTMLElement;
+  draggableShip.draggable = true;
+  draggableShip.dataset.shipId = draggableShip.id;
+  draggableShip.dataset.shipOrientation = draggableShip.classList.contains(
+    'horizontal'
+  )
+    ? 'horizontal'
+    : 'vertical';
+
+  draggableShip.addEventListener('dragstart', (e: DragEvent) => {
+    if (e.dataTransfer) {
+      // Pass both ship ID and orientation as data
+      e.dataTransfer.setData(
+        'text/plain',
+        `${draggableShip.id}:${draggableShip.dataset.shipOrientation}`
+      );
+    }
+  });
+});
+
+const cells = document.querySelectorAll('.board-cell');
+
+cells.forEach((cell) => {
+  cell.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  cell.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const shipData = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
+    const [shipId, shipOrientation] = shipData.split(':'); // Split ID and orientation
+    console.log(shipOrientation);
+    const ship = document.getElementById(shipId);
+
+    if (ship) {
+      const shipLength = parseInt(
+        ship.getAttribute('data-ship-length') || '0',
+        10
+      );
+      const row = parseInt((cell as HTMLElement).dataset.x || '0', 10); // Use the dropped cell's row
+      const col = parseInt((cell as HTMLElement).dataset.y || '0', 10); // Use the dropped cell's column
+
+      const ship_ = new Ship(shipLength);
+      if (
+        playerGameboard.validPlacement(
+          ship_,
+          row,
+          col,
+          shipOrientation === 'vertical'
+        )
+      ) {
+        cell.appendChild(ship);
+
+        playerGameboard.placeShip(
+          new Ship(shipLength),
+          row,
+          col,
+          shipOrientation === 'vertical'
+        );
+      } else {
+        alert('Invalid ship placement');
+      }
+      // Uncomment the following line to hide the ship after placement
+      // ship.style.display = 'none';
+    }
+  });
+});
 
 // Add event listeners to computer's board cells
 computerBoard.querySelectorAll('.board div').forEach((cell, index) => {
@@ -23,9 +96,14 @@ computerBoard.querySelectorAll('.board div').forEach((cell, index) => {
     if (!playerGameboard.allShipsSunk() && !computerGameboard.allShipsSunk()) {
       const x = Math.floor(index / boardSize);
       const y = index % boardSize;
-      player.makeMove(computerGameboard, x, y);
-      updateBoard(computerBoard, computerGameboard, false);
-      computerTurn();
+
+      // Check if the cell has already been clicked
+      if (!clickedCells.has(`${x}-${y}`)) {
+        player.makeMove(computerGameboard, x, y);
+        updateBoard(computerBoard, computerGameboard, false);
+        computerTurn();
+        clickedCells.add(`${x}-${y}`); // Mark the cell as clicked
+      }
     }
   });
 });
@@ -35,10 +113,6 @@ function computerTurn() {
   if (!playerGameboard.allShipsSunk() && !computerGameboard.allShipsSunk()) {
     computer.makeRandomMove(playerGameboard, boardSize);
     updateBoard(playerBoard, playerGameboard, true);
-
-    //if (!playerGameboard.allShipsSunk()) {
-    //  setTimeout(computerTurn, 1000);
-    //}
   }
 }
 
@@ -82,6 +156,50 @@ function updateBoard(
   }
 }
 
+function getRandomCoordinates(shipLength: number) {
+  const horizontal = Math.random() < 0.5; // Randomly choose horizontal or vertical placement
+  let x, y;
+
+  if (horizontal) {
+    x = Math.floor(Math.random() * (boardSize - shipLength + 1));
+    y = Math.floor(Math.random() * boardSize);
+  } else {
+    x = Math.floor(Math.random() * boardSize);
+    y = Math.floor(Math.random() * (boardSize - shipLength + 1));
+  }
+
+  return { x, y, horizontal };
+}
+
+function addRandomShipsToGameboard(gameboard: Gameboard) {
+  const shipLengths = [5, 4, 3, 3, 2];
+  shipLengths.forEach((shipLength) => {
+    let coordinates, x, y, horizontal, shipFits;
+
+    do {
+      coordinates = getRandomCoordinates(shipLength);
+      ({ x, y, horizontal } = coordinates);
+      shipFits = true;
+
+      // Check if the ship fits in the selected location without overlapping
+      for (let i = 0; i < shipLength; i++) {
+        if (horizontal) {
+          if (gameboard.getShipAt(x + i, y) !== null) {
+            shipFits = false;
+            break;
+          }
+        } else {
+          if (gameboard.getShipAt(x, y + i) !== null) {
+            shipFits = false;
+            break;
+          }
+        }
+      }
+    } while (!shipFits);
+    gameboard.placeShip(new Ship(shipLength), x, y, horizontal);
+  });
+}
+
 // Create the game boards
 function createBoard(boardElement: HTMLElement, isPlayer: boolean) {
   for (let x = 0; x < boardSize; x++) {
@@ -97,16 +215,8 @@ function createBoard(boardElement: HTMLElement, isPlayer: boolean) {
     }
   }
 
-  // Place ships on the board as needed
-  if (isPlayer) {
-    // Example: Place player's ships
-    playerGameboard.placeShip(new Ship(3), 0, 0, true);
-    playerGameboard.placeShip(new Ship(4), 2, 3, false);
-    // Add more ships as needed
-  } else {
-    // Example: Place computer's ships
-    computerGameboard.placeShip(new Ship(3), 1, 1, true);
-    computerGameboard.placeShip(new Ship(4), 4, 5, false);
+  if (!isPlayer) {
+    addRandomShipsToGameboard(computerGameboard);
     // Add
   }
 }

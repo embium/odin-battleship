@@ -11,6 +11,10 @@
       rel="stylesheet"
       href="styles.css"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/reset-css@5.0.2/reset.min.css "
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="game-container">
@@ -21,6 +25,33 @@
           class="board"
           id="player-board"
         ></div>
+        <div class="ships">
+          <div
+            id="carrier"
+            class="ship"
+            data-ship-length="5"
+          ></div>
+          <div
+            id="battleship"
+            class="ship"
+            data-ship-length="4"
+          ></div>
+          <div
+            id="cruiser"
+            class="ship"
+            data-ship-length="3"
+          ></div>
+          <div
+            id="submarine"
+            class="ship"
+            data-ship-length="3"
+          ></div>
+          <div
+            id="destroyer"
+            class="ship"
+            data-ship-length="2"
+          ></div>
+        </div>
       </div>
       <div class="computer-board">
         <h2>Computer's Board</h2>

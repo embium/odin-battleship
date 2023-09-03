@@ -13,30 +13,33 @@ class Gameboard {
             }
         }
     }
-    placeShip(ship, x, y, horizontal) {
+    placeShip(ship, x, y, vertical) {
+        this.ships.push(ship);
+    }
+    validPlacement(ship, x, y, vertical) {
         if (x < 0 ||
             x >= this.grid.length ||
             y < 0 ||
             y >= this.grid[0].length ||
-            (horizontal && x + ship.getLength() > this.grid.length) ||
-            (!horizontal && y + ship.getLength() > this.grid[0].length)) {
-            throw new Error('Invalid ship placement');
+            (vertical && x + ship.getLength() > this.grid.length) ||
+            (!vertical && y + ship.getLength() > this.grid[0].length)) {
+            return false;
         }
         for (let i = 0; i < ship.getLength(); i++) {
-            if (horizontal) {
+            if (vertical) {
                 if (this.grid[x + i][y] !== null) {
-                    throw new Error('Ship overlap');
+                    return false;
                 }
                 this.grid[x + i][y] = ship;
             }
             else {
                 if (this.grid[x][y + i] !== null) {
-                    throw new Error('Ship overlap');
+                    return false;
                 }
                 this.grid[x][y + i] = ship;
             }
         }
-        this.ships.push(ship);
+        return true;
     }
     receiveAttack(x, y) {
         if (x < 0 || x >= this.grid.length || y < 0 || y >= this.grid[0].length) {
