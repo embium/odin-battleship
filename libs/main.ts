@@ -31,6 +31,8 @@ ships.forEach((ship) => {
     ? 'horizontal'
     : 'vertical';
 
+  // Add a click event listener to the "Flip All Ships" button
+  draggableShip.dataset.placed = 'false';
   draggableShip.addEventListener('dragstart', (e: DragEvent) => {
     if (e.dataTransfer) {
       // Pass both ship ID and orientation as data
@@ -41,6 +43,34 @@ ships.forEach((ship) => {
     }
   });
 });
+
+const flipShipsButton = document.getElementById('flip-ships-button');
+if (flipShipsButton) {
+  flipShipsButton.addEventListener('click', () => {
+    ships.forEach((ship) => {
+      const draggableShip = ship as HTMLElement;
+
+      // Check if the ship has not been placed
+      if (draggableShip.dataset.placed === 'false') {
+        const currentOrientation = draggableShip.dataset.shipOrientation;
+
+        // Toggle the ship's orientation
+        const newOrientation =
+          currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
+
+        // Rotate the ship by changing its style
+        if (newOrientation === 'vertical') {
+          draggableShip.style.transform = 'rotate(0deg)';
+        } else {
+          draggableShip.style.transform = 'rotate(90deg)';
+        }
+
+        // Update the dataset attribute
+        draggableShip.dataset.shipOrientation = newOrientation;
+      }
+    });
+  });
+}
 
 const cells = document.querySelectorAll('.board-cell');
 
@@ -53,7 +83,6 @@ cells.forEach((cell) => {
     e.preventDefault();
     const shipData = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
     const [shipId, shipOrientation] = shipData.split(':'); // Split ID and orientation
-    console.log(shipOrientation);
     const ship = document.getElementById(shipId);
 
     if (ship) {
@@ -61,6 +90,18 @@ cells.forEach((cell) => {
         ship.getAttribute('data-ship-length') || '0',
         10
       );
+
+      /*
+        left: 216px;
+  transform-origin: top left;
+  */
+      if (shipOrientation === 'horizontal') {
+        const cellWidth = 42;
+        const newLeft = shipLength * cellWidth;
+        ship.style.left = `${newLeft}px`;
+        ship.style.transformOrigin = 'top left';
+      }
+
       const row = parseInt((cell as HTMLElement).dataset.x || '0', 10); // Use the dropped cell's row
       const col = parseInt((cell as HTMLElement).dataset.y || '0', 10); // Use the dropped cell's column
 
@@ -81,6 +122,7 @@ cells.forEach((cell) => {
           col,
           shipOrientation === 'vertical'
         );
+        ship.dataset.placed = 'true';
       } else {
         alert('Invalid ship placement');
       }
@@ -197,7 +239,6 @@ function addRandomShipsToGameboard(gameboard: Gameboard) {
       }
     } while (!shipFits);
     const ship = new Ship(shipLength);
-    console.log(x, y);
     if (gameboard.validPlacement(ship, x, y, !horizontal)) {
       gameboard.placeShip(ship, x, y, !horizontal);
     }
