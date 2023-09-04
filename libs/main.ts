@@ -81,10 +81,11 @@ cells.forEach((cell) => {
 
   cell.addEventListener('drop', (e) => {
     e.preventDefault();
+
     const shipData = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
     const [shipId, shipOrientation] = shipData.split(':'); // Split ID and orientation
     const ship = document.getElementById(shipId);
-
+    if (ship?.dataset.placed === 'true') return;
     if (ship) {
       const shipLength = parseInt(
         ship.getAttribute('data-ship-length') || '0',

@@ -163,6 +163,8 @@ cells.forEach((cell) => {
         const shipData = ((_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.getData('text/plain')) || '';
         const [shipId, shipOrientation] = shipData.split(':'); // Split ID and orientation
         const ship = document.getElementById(shipId);
+        if ((ship === null || ship === void 0 ? void 0 : ship.dataset.placed) === 'true')
+            return;
         if (ship) {
             const shipLength = parseInt(ship.getAttribute('data-ship-length') || '0', 10);
             /*
