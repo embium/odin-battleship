@@ -42,6 +42,10 @@ class Gameboard {
     this.ships.push(ship);
   }
 
+  getShips() {
+    return this.ships;
+  }
+
   validPlacement(ship: Ship, x: number, y: number, vertical: boolean) {
     if (
       x < 0 ||

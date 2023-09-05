@@ -40,6 +40,9 @@ class Gameboard {
         }
         this.ships.push(ship);
     }
+    getShips() {
+        return this.ships;
+    }
     validPlacement(ship, x, y, vertical) {
         if (x < 0 ||
             x >= this.grid.length ||

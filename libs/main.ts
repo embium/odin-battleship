@@ -134,6 +134,7 @@ cells.forEach((cell) => {
 // Add event listeners to computer's board cells
 computerBoard.querySelectorAll('.board div').forEach((cell, index) => {
   cell.addEventListener('click', () => {
+    if (playerGameboard.getShips().length !== 5) return;
     if (!playerGameboard.allShipsSunk() && !computerGameboard.allShipsSunk()) {
       const x = Math.floor(index / boardSize);
       const y = index % boardSize;
