@@ -36,10 +36,7 @@ ships.forEach((ship) => {
   draggableShip.addEventListener('dragstart', (e: DragEvent) => {
     if (e.dataTransfer) {
       // Pass both ship ID and orientation as data
-      e.dataTransfer.setData(
-        'text/plain',
-        `${draggableShip.id}:${draggableShip.dataset.shipOrientation}`
-      );
+      e.dataTransfer.setData('text/plain', `${draggableShip.id}`);
     }
   });
 });
@@ -82,15 +79,12 @@ cells.forEach((cell) => {
   cell.addEventListener('drop', (e) => {
     e.preventDefault();
 
-    const shipData = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
-    const [shipId, shipOrientation] = shipData.split(':'); // Split ID and orientation
+    const shipId = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
     const ship = document.getElementById(shipId);
-    if (ship?.dataset.placed === 'true') return;
     if (ship) {
-      const shipLength = parseInt(
-        ship.getAttribute('data-ship-length') || '0',
-        10
-      );
+      if (ship.dataset.placed === 'true') return;
+      const shipOrientation = ship.dataset.shipOrientation;
+      const shipLength = parseInt(ship.dataset.shipLength || '0', 10);
 
       /*
         left: 216px;
@@ -219,30 +213,16 @@ function addRandomShipsToGameboard(gameboard: Gameboard) {
   shipLengths.forEach((shipLength) => {
     let coordinates, x, y, horizontal, shipFits;
 
+    const ship = new Ship(shipLength);
     do {
       coordinates = getRandomCoordinates(shipLength);
       ({ x, y, horizontal } = coordinates);
       shipFits = true;
 
-      // Check if the ship fits in the selected location without overlapping
-      for (let i = 0; i < shipLength; i++) {
-        if (horizontal) {
-          if (gameboard.getShipAt(x + i, y) !== null) {
-            shipFits = false;
-            break;
-          }
-        } else {
-          if (gameboard.getShipAt(x, y + i) !== null) {
-            shipFits = false;
-            break;
-          }
-        }
-      }
+      shipFits = gameboard.validPlacement(ship, x, y, !horizontal);
     } while (!shipFits);
-    const ship = new Ship(shipLength);
-    if (gameboard.validPlacement(ship, x, y, !horizontal)) {
-      gameboard.placeShip(ship, x, y, !horizontal);
-    }
+    console.log(ship, x, y);
+    gameboard.placeShip(ship, x, y, !horizontal);
   });
 }
 
