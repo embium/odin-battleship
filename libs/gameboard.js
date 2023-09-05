@@ -13,6 +13,16 @@ class Gameboard {
             }
         }
     }
+    removeShip(length, x, y, vertical) {
+        for (let i = 0; i < length; i++) {
+            if (vertical) {
+                this.grid[x + i][y] = null;
+            }
+            else {
+                this.grid[x][y + i] = null;
+            }
+        }
+    }
     placeShip(ship, x, y, vertical) {
         for (let i = 0; i < ship.getLength(); i++) {
             if (vertical) {

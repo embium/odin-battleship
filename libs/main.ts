@@ -82,14 +82,16 @@ cells.forEach((cell) => {
     const shipId = (e as DragEvent).dataTransfer?.getData('text/plain') || '';
     const ship = document.getElementById(shipId);
     if (ship) {
-      if (ship.dataset.placed === 'true') return;
       const shipOrientation = ship.dataset.shipOrientation;
       const shipLength = parseInt(ship.dataset.shipLength || '0', 10);
-
-      /*
-        left: 216px;
-  transform-origin: top left;
-  */
+      if (ship.dataset.placed === 'true') {
+        playerGameboard.removeShip(
+          shipLength,
+          parseInt(ship.dataset.x || '0', 0),
+          parseInt(ship.dataset.y || '0', 0),
+          shipOrientation === 'vertical'
+        );
+      }
       if (shipOrientation === 'horizontal') {
         const cellWidth = 42;
         const newLeft = shipLength * cellWidth;
@@ -117,6 +119,8 @@ cells.forEach((cell) => {
           col,
           shipOrientation === 'vertical'
         );
+        ship.dataset.x = row.toString();
+        ship.dataset.y = col.toString();
         ship.dataset.placed = 'true';
       } else {
         alert('Invalid ship placement');
