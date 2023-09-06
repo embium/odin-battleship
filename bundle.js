@@ -69,6 +69,18 @@ class Gameboard {
             (!vertical && y + ship.getLength() > this.grid[0].length)) {
             return false;
         }
+        for (let i = 0; i < ship.getLength(); i++) {
+            if (vertical) {
+                if (this.grid[x + i][y] !== null) {
+                    return false;
+                }
+            }
+            else {
+                if (this.grid[x][y + i] !== null) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
     receiveAttack(x, y) {

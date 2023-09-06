@@ -57,6 +57,17 @@ class Gameboard {
     ) {
       return false;
     }
+    for (let i = 0; i < ship.getLength(); i++) {
+      if (vertical) {
+        if (this.grid[x + i][y] !== null) {
+          return false;
+        }
+      } else {
+        if (this.grid[x][y + i] !== null) {
+          return false;
+        }
+      }
+    }
     return true;
   }
 
