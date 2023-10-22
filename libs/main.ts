@@ -56,10 +56,10 @@ if (flipShipsButton) {
           currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
 
         // Rotate the ship by changing its style
-        if (newOrientation === 'vertical') {
-          draggableShip.style.transform = 'rotate(0deg)';
-        } else {
+        if (newOrientation === 'horizontal') {
           draggableShip.style.transform = 'rotate(90deg)';
+        } else {
+          draggableShip.style.transform = 'rotate(0deg)';
         }
 
         // Update the dataset attribute
@@ -89,7 +89,7 @@ cells.forEach((cell) => {
           shipLength,
           parseInt(ship.dataset.x || '0', 0),
           parseInt(ship.dataset.y || '0', 0),
-          shipOrientation === 'vertical'
+          shipOrientation === 'horizontal'
         );
       }
       if (shipOrientation === 'horizontal') {
@@ -108,7 +108,7 @@ cells.forEach((cell) => {
           ship_,
           row,
           col,
-          shipOrientation === 'vertical'
+          shipOrientation === 'horizontal'
         )
       ) {
         cell.appendChild(ship);
@@ -117,7 +117,7 @@ cells.forEach((cell) => {
           new Ship(shipLength),
           row,
           col,
-          shipOrientation === 'vertical'
+          shipOrientation === 'horizontal'
         );
         ship.dataset.x = row.toString();
         ship.dataset.y = col.toString();

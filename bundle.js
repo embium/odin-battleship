@@ -30,9 +30,9 @@ class Gameboard {
             }
         }
     }
-    removeShip(length, x, y, vertical) {
+    removeShip(length, x, y, horizontal) {
         for (let i = 0; i < length; i++) {
-            if (vertical) {
+            if (horizontal) {
                 this.grid[x + i][y] = null;
             }
             else {
@@ -40,19 +40,13 @@ class Gameboard {
             }
         }
     }
-    placeShip(ship, x, y, vertical) {
+    placeShip(ship, x, y, horizontal) {
         for (let i = 0; i < ship.getLength(); i++) {
-            if (vertical) {
-                if (this.grid[x + i][y] !== null) {
-                    return false;
-                }
-                this.grid[x + i][y] = ship;
+            if (horizontal) {
+                this.grid[y][x + i] = ship;
             }
             else {
-                if (this.grid[x][y + i] !== null) {
-                    return false;
-                }
-                this.grid[x][y + i] = ship;
+                this.grid[x + i][y] = ship;
             }
         }
         this.ships.push(ship);
@@ -60,23 +54,27 @@ class Gameboard {
     getShips() {
         return this.ships;
     }
-    validPlacement(ship, x, y, vertical) {
+    validPlacement(ship, x, y, horizontal) {
+        console.log(this.grid[0]);
         if (x < 0 ||
             x >= this.grid.length ||
             y < 0 ||
             y >= this.grid[0].length ||
-            (vertical && x + ship.getLength() > this.grid.length) ||
-            (!vertical && y + ship.getLength() > this.grid[0].length)) {
+            (horizontal && x + ship.getLength() > this.grid.length) ||
+            (!horizontal && y + ship.getLength() > this.grid[x].length)) {
+            console.log('wrong 1');
             return false;
         }
         for (let i = 0; i < ship.getLength(); i++) {
-            if (vertical) {
-                if (this.grid[x + i][y] !== null) {
+            if (horizontal) {
+                if (this.grid[x][y + i] !== null) {
+                    console.log('wrong 2');
                     return false;
                 }
             }
             else {
-                if (this.grid[x][y + i] !== null) {
+                if (this.grid[x + i][y] !== null) {
+                    console.log('wrong 3');
                     return false;
                 }
             }
@@ -165,11 +163,11 @@ if (flipShipsButton) {
                 // Toggle the ship's orientation
                 const newOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
                 // Rotate the ship by changing its style
-                if (newOrientation === 'vertical') {
-                    draggableShip.style.transform = 'rotate(0deg)';
+                if (newOrientation === 'horizontal') {
+                    draggableShip.style.transform = 'rotate(90deg)';
                 }
                 else {
-                    draggableShip.style.transform = 'rotate(90deg)';
+                    draggableShip.style.transform = 'rotate(0deg)';
                 }
                 // Update the dataset attribute
                 draggableShip.dataset.shipOrientation = newOrientation;
@@ -191,7 +189,7 @@ cells.forEach((cell) => {
             const shipOrientation = ship.dataset.shipOrientation;
             const shipLength = parseInt(ship.dataset.shipLength || '0', 10);
             if (ship.dataset.placed === 'true') {
-                playerGameboard.removeShip(shipLength, parseInt(ship.dataset.x || '0', 0), parseInt(ship.dataset.y || '0', 0), shipOrientation === 'vertical');
+                playerGameboard.removeShip(shipLength, parseInt(ship.dataset.x || '0', 0), parseInt(ship.dataset.y || '0', 0), shipOrientation === 'horizontal');
             }
             if (shipOrientation === 'horizontal') {
                 const cellWidth = 42;
@@ -202,9 +200,9 @@ cells.forEach((cell) => {
             const row = parseInt(cell.dataset.x || '0', 10); // Use the dropped cell's row
             const col = parseInt(cell.dataset.y || '0', 10); // Use the dropped cell's column
             const ship_ = new ship_1.default(shipLength);
-            if (playerGameboard.validPlacement(ship_, row, col, shipOrientation === 'vertical')) {
+            if (playerGameboard.validPlacement(ship_, row, col, shipOrientation === 'horizontal')) {
                 cell.appendChild(ship);
-                playerGameboard.placeShip(new ship_1.default(shipLength), row, col, shipOrientation === 'vertical');
+                playerGameboard.placeShip(new ship_1.default(shipLength), row, col, shipOrientation === 'horizontal');
                 ship.dataset.x = row.toString();
                 ship.dataset.y = col.toString();
                 ship.dataset.placed = 'true';

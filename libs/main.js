@@ -47,11 +47,11 @@ if (flipShipsButton) {
                 // Toggle the ship's orientation
                 const newOrientation = currentOrientation === 'horizontal' ? 'vertical' : 'horizontal';
                 // Rotate the ship by changing its style
-                if (newOrientation === 'vertical') {
-                    draggableShip.style.transform = 'rotate(0deg)';
+                if (newOrientation === 'horizontal') {
+                    draggableShip.style.transform = 'rotate(90deg)';
                 }
                 else {
-                    draggableShip.style.transform = 'rotate(90deg)';
+                    draggableShip.style.transform = 'rotate(0deg)';
                 }
                 // Update the dataset attribute
                 draggableShip.dataset.shipOrientation = newOrientation;
@@ -73,7 +73,7 @@ cells.forEach((cell) => {
             const shipOrientation = ship.dataset.shipOrientation;
             const shipLength = parseInt(ship.dataset.shipLength || '0', 10);
             if (ship.dataset.placed === 'true') {
-                playerGameboard.removeShip(shipLength, parseInt(ship.dataset.x || '0', 0), parseInt(ship.dataset.y || '0', 0), shipOrientation === 'vertical');
+                playerGameboard.removeShip(shipLength, parseInt(ship.dataset.x || '0', 0), parseInt(ship.dataset.y || '0', 0), shipOrientation === 'horizontal');
             }
             if (shipOrientation === 'horizontal') {
                 const cellWidth = 42;
@@ -84,9 +84,9 @@ cells.forEach((cell) => {
             const row = parseInt(cell.dataset.x || '0', 10); // Use the dropped cell's row
             const col = parseInt(cell.dataset.y || '0', 10); // Use the dropped cell's column
             const ship_ = new ship_1.default(shipLength);
-            if (playerGameboard.validPlacement(ship_, row, col, shipOrientation === 'vertical')) {
+            if (playerGameboard.validPlacement(ship_, row, col, shipOrientation === 'horizontal')) {
                 cell.appendChild(ship);
-                playerGameboard.placeShip(new ship_1.default(shipLength), row, col, shipOrientation === 'vertical');
+                playerGameboard.placeShip(new ship_1.default(shipLength), row, col, shipOrientation === 'horizontal');
                 ship.dataset.x = row.toString();
                 ship.dataset.y = col.toString();
                 ship.dataset.placed = 'true';

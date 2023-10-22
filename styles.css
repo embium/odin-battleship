@@ -42,14 +42,6 @@ body {
   font-weight: bold;
 }
 
-.ships .horizontal {
-  transform: rotate(0deg); /* No rotation for horizontal ships */
-}
-
-.ships .vertical {
-  transform: rotate(90deg); /* Rotate vertical ships 90 degrees */
-}
-
 #flip-ships-button {
   margin: 10px;
 }
